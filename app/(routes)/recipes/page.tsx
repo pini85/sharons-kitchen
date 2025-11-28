@@ -10,12 +10,13 @@ import { Suspense } from "react";
 export default async function RecipesPage({
   searchParams,
 }: {
-  searchParams: { bucket?: string; search?: string; favorite?: string };
+  searchParams: Promise<{ bucket?: string; search?: string; favorite?: string }>;
 }) {
+  const params = await searchParams;
   const result = await listRecipes({
-    bucket: searchParams.bucket,
-    search: searchParams.search,
-    favorite: searchParams.favorite === "true" ? true : undefined,
+    bucket: params.bucket,
+    search: params.search,
+    favorite: params.favorite === "true" ? true : undefined,
   });
 
   const recipes = result.success && result.data ? result.data : [];

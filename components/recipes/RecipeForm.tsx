@@ -5,22 +5,27 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { RecipeInput, type RecipeInputType } from "@/lib/validators";
 import { PhotoUpload } from "./PhotoUpload";
 import { BucketSelector } from "./BucketSelector";
-import { IngredientChips } from "./IngredientChips";
 import { Plus, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import toast from "react-hot-toast";
 
 interface RecipeFormProps {
-  onSubmit: (data: RecipeInputType) => Promise<{ success: boolean; error?: string }>;
+  onSubmit: (
+    data: RecipeInputType
+  ) => Promise<{ success: boolean; error?: string }>;
   initialData?: Partial<RecipeInputType>;
   onSuccess?: () => void;
 }
 
-export function RecipeForm({ onSubmit, initialData, onSuccess }: RecipeFormProps) {
-  const [ingredients, setIngredients] = useState<Array<{ name: string; amount?: string }>>(
-    initialData?.ingredients || [{ name: "", amount: "" }]
-  );
+export function RecipeForm({
+  onSubmit,
+  initialData,
+  onSuccess,
+}: RecipeFormProps) {
+  const [ingredients, setIngredients] = useState<
+    Array<{ name: string; amount?: string }>
+  >(initialData?.ingredients || [{ name: "", amount: "" }]);
   const [steps, setSteps] = useState<Array<{ order: number; text: string }>>(
     initialData?.steps || [{ order: 1, text: "" }]
   );
@@ -34,6 +39,7 @@ export function RecipeForm({ onSubmit, initialData, onSuccess }: RecipeFormProps
     formState: { errors, isSubmitting },
   } = useForm<RecipeInputType>({
     resolver: zodResolver(RecipeInput),
+    mode: "onSubmit",
     defaultValues: {
       title: initialData?.title || "",
       description: initialData?.description || "",
@@ -48,6 +54,11 @@ export function RecipeForm({ onSubmit, initialData, onSuccess }: RecipeFormProps
 
   const imageUrl = watch("imageUrl") || "";
 
+  // Sync buckets state with form state (without validation)
+  useEffect(() => {
+    setValue("buckets", buckets, { shouldValidate: false });
+  }, [buckets, setValue]);
+
   const addIngredient = () => {
     setIngredients([...ingredients, { name: "", amount: "" }]);
   };
@@ -58,7 +69,11 @@ export function RecipeForm({ onSubmit, initialData, onSuccess }: RecipeFormProps
     setValue("ingredients", newIngredients);
   };
 
-  const updateIngredient = (index: number, field: "name" | "amount", value: string) => {
+  const updateIngredient = (
+    index: number,
+    field: "name" | "amount",
+    value: string
+  ) => {
     const newIngredients = [...ingredients];
     newIngredients[index] = { ...newIngredients[index], [field]: value };
     setIngredients(newIngredients);
@@ -72,7 +87,9 @@ export function RecipeForm({ onSubmit, initialData, onSuccess }: RecipeFormProps
   };
 
   const removeStep = (index: number) => {
-    const newSteps = steps.filter((_, i) => i !== index).map((step, i) => ({ ...step, order: i + 1 }));
+    const newSteps = steps
+      .filter((_, i) => i !== index)
+      .map((step, i) => ({ ...step, order: i + 1 }));
     setSteps(newSteps);
     setValue("steps", newSteps);
   };
@@ -85,19 +102,34 @@ export function RecipeForm({ onSubmit, initialData, onSuccess }: RecipeFormProps
   };
 
   const onFormSubmit = async (data: RecipeInputType) => {
-    const formData = {
-      ...data,
-      ingredients: ingredients.filter((ing) => ing.name.trim() !== ""),
-      steps: steps.filter((step) => step.text.trim() !== ""),
-      buckets,
-    };
+    try {
+      // Ensure buckets are synced before submission
+      setValue("buckets", buckets, { shouldValidate: true });
 
-    const result = await onSubmit(formData);
-    if (result.success) {
-      toast.success("Recipe saved!");
-      onSuccess?.();
-    } else {
-      toast.error(result.error || "Failed to save recipe");
+      const formData = {
+        ...data,
+        ingredients: ingredients.filter((ing) => ing.name.trim() !== ""),
+        steps: steps.filter((step) => step.text.trim() !== ""),
+        buckets,
+      };
+
+      // Validate buckets manually
+      if (buckets.length === 0) {
+        toast.error("Please select at least one category");
+        return;
+      }
+
+      const result = await onSubmit(formData);
+
+      if (result.success) {
+        toast.success("Recipe saved!");
+        onSuccess?.();
+      } else {
+        toast.error(result.error || "Failed to save recipe");
+      }
+    } catch (error) {
+      console.error("Form submission error:", error);
+      toast.error("An error occurred while saving the recipe");
     }
   };
 
@@ -110,7 +142,9 @@ export function RecipeForm({ onSubmit, initialData, onSuccess }: RecipeFormProps
           className="w-full px-4 py-3 bg-card border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
           placeholder="Recipe title"
         />
-        {errors.title && <p className="text-sm text-red-500 mt-1">{errors.title.message}</p>}
+        {errors.title && (
+          <p className="text-sm text-red-500 mt-1">{errors.title.message}</p>
+        )}
       </div>
 
       <div>
@@ -133,7 +167,9 @@ export function RecipeForm({ onSubmit, initialData, onSuccess }: RecipeFormProps
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium mb-2">Time (minutes)</label>
+          <label className="block text-sm font-medium mb-2">
+            Time (minutes)
+          </label>
           <input
             type="number"
             {...register("timeMinutes", { valueAsNumber: true })}
@@ -152,9 +188,14 @@ export function RecipeForm({ onSubmit, initialData, onSuccess }: RecipeFormProps
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-2">Buckets *</label>
+        <label className="block text-sm font-medium mb-2">Categories *</label>
+        <p className="text-xs text-foreground/60 mb-3">
+          Select at least one category
+        </p>
         <BucketSelector value={buckets} onChange={setBuckets} />
-        {errors.buckets && <p className="text-sm text-red-500 mt-1">{errors.buckets.message}</p>}
+        {errors.buckets && (
+          <p className="text-sm text-red-500 mt-1">{errors.buckets.message}</p>
+        )}
       </div>
 
       <div>
@@ -175,14 +216,18 @@ export function RecipeForm({ onSubmit, initialData, onSuccess }: RecipeFormProps
               <input
                 type="text"
                 value={ing.name}
-                onChange={(e) => updateIngredient(index, "name", e.target.value)}
+                onChange={(e) =>
+                  updateIngredient(index, "name", e.target.value)
+                }
                 placeholder="Ingredient name"
                 className="flex-1 px-4 py-3 bg-card border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
               />
               <input
                 type="text"
                 value={ing.amount || ""}
-                onChange={(e) => updateIngredient(index, "amount", e.target.value)}
+                onChange={(e) =>
+                  updateIngredient(index, "amount", e.target.value)
+                }
                 placeholder="Amount"
                 className="w-32 px-4 py-3 bg-card border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
               />
@@ -199,7 +244,9 @@ export function RecipeForm({ onSubmit, initialData, onSuccess }: RecipeFormProps
           ))}
         </div>
         {errors.ingredients && (
-          <p className="text-sm text-red-500 mt-1">{errors.ingredients.message}</p>
+          <p className="text-sm text-red-500 mt-1">
+            {errors.ingredients.message}
+          </p>
         )}
       </div>
 
@@ -240,7 +287,13 @@ export function RecipeForm({ onSubmit, initialData, onSuccess }: RecipeFormProps
             </div>
           ))}
         </div>
-        {errors.steps && <p className="text-sm text-red-500 mt-1">{errors.steps.message}</p>}
+        {errors.steps && (
+          <p className="text-sm text-red-500 mt-1">
+            {typeof errors.steps === "object" && "message" in errors.steps
+              ? errors.steps.message
+              : "Please add at least one step"}
+          </p>
+        )}
       </div>
 
       <button
@@ -256,4 +309,3 @@ export function RecipeForm({ onSubmit, initialData, onSuccess }: RecipeFormProps
     </form>
   );
 }
-

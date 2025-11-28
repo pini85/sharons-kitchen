@@ -13,19 +13,22 @@ export default async function RecipeDetailPage({
   params,
   searchParams,
 }: {
-  params: { id: string };
-  searchParams: { edit?: string };
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ edit?: string }>;
 }) {
+  const { id } = await params;
+  const { edit } = await searchParams;
+  
   const result = await listRecipes();
   const recipe = result.success && result.data
-    ? result.data.find((r) => r.id === params.id) ?? null
+    ? result.data.find((r) => r.id === id) ?? null
     : null;
 
   if (!recipe) {
     redirect("/recipes");
   }
 
-  const isEditing = searchParams.edit === "true";
+  const isEditing = edit === "true";
 
   return (
     <>
