@@ -28,7 +28,8 @@ export function SuggestionFlow({ initialRecipe }: SuggestionFlowProps) {
   const loadNextSuggestion = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch("/api/suggest");
+      const url = recipe ? `/api/suggest?exclude=${recipe.id}` : "/api/suggest";
+      const response = await fetch(url);
       if (response.ok) {
         const data = await response.json();
         if (data.recipe) {
@@ -36,8 +37,11 @@ export function SuggestionFlow({ initialRecipe }: SuggestionFlowProps) {
         } else {
           toast.error("No more suggestions available");
         }
+      } else {
+        toast.error("Failed to load suggestion");
       }
     } catch (error) {
+      console.error("Error loading suggestion:", error);
       toast.error("Failed to load suggestion");
     } finally {
       setIsLoading(false);
@@ -61,8 +65,14 @@ export function SuggestionFlow({ initialRecipe }: SuggestionFlowProps) {
   const handleDecline = async () => {
     if (!recipe) return;
     setIsLoading(true);
-    await declineSuggestion(recipe.id);
-    await loadNextSuggestion();
+    try {
+      await declineSuggestion(recipe.id);
+      await loadNextSuggestion();
+    } catch (error) {
+      console.error("Error in handleDecline:", error);
+      toast.error("Failed to load next suggestion");
+      setIsLoading(false);
+    }
   };
 
   if (!recipe) {
@@ -77,18 +87,16 @@ export function SuggestionFlow({ initialRecipe }: SuggestionFlowProps) {
   }
 
   return (
-    <div className="flex flex-col flex-1 overflow-hidden">
-      <div className="flex-1 overflow-y-auto">
-        <SuggestCard
-          id={recipe.id}
-          title={recipe.title}
-          imageUrl={recipe.imageUrl}
-          timeMinutes={recipe.timeMinutes}
-          isFavorite={recipe.isFavorite}
-          buckets={recipe.buckets}
-          description={recipe.description}
-        />
-      </div>
+    <div className="flex flex-col flex-1">
+      <SuggestCard
+        id={recipe.id}
+        title={recipe.title}
+        imageUrl={recipe.imageUrl}
+        timeMinutes={recipe.timeMinutes}
+        isFavorite={recipe.isFavorite}
+        buckets={recipe.buckets}
+        description={recipe.description}
+      />
       <SuggestionControls
         onAccept={handleAccept}
         onDecline={handleDecline}

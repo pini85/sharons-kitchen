@@ -30,9 +30,9 @@ export function SuggestCard({
       initial="initial"
       animate="animate"
       variants={scaleIn}
-      className="bg-card border border-border rounded-lg overflow-hidden shadow-lg"
+      className="bg-card border border-border rounded-lg overflow-hidden shadow-lg flex-shrink-0"
     >
-      <div className="relative aspect-video bg-background">
+      <div className="relative aspect-[4/3] bg-background">
         {imageUrl ? (
           <Image
             src={imageUrl}
@@ -43,19 +43,19 @@ export function SuggestCard({
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-foreground/20">
-            <UtensilsCrossed className="h-16 w-16" />
+            <UtensilsCrossed className="h-12 w-12" />
           </div>
         )}
         {isFavorite && (
-          <div className="absolute top-3 right-3">
-            <Heart className="h-6 w-6 fill-accent text-accent" />
+          <div className="absolute top-2 right-2">
+            <Heart className="h-5 w-5 fill-accent text-accent" />
           </div>
         )}
       </div>
-      <div className="p-6">
-        <h2 className="text-2xl font-bold mb-2">{title}</h2>
-        {description && <p className="text-foreground/70 mb-4">{description}</p>}
-        <div className="flex items-center gap-4 mb-4 text-sm text-foreground/60">
+      <div className="p-4">
+        <h2 className="text-xl font-bold mb-2">{title}</h2>
+        {description && <p className="text-foreground/70 text-sm mb-3 line-clamp-2">{description}</p>}
+        <div className="flex items-center gap-3 text-sm text-foreground/60">
           {timeMinutes && (
             <div className="flex items-center gap-1">
               <Clock className="h-4 w-4" />
@@ -67,7 +67,7 @@ export function SuggestCard({
               {buckets.map((b) => (
                 <span
                   key={b.bucket.name}
-                  className="px-3 py-1 bg-accent/20 text-accent rounded-full text-xs font-medium"
+                  className="px-2 py-0.5 bg-accent/20 text-accent rounded-full text-xs font-medium"
                 >
                   {b.bucket.name}
                 </span>

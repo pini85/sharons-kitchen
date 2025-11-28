@@ -185,7 +185,7 @@ function rankCandidates(
 /**
  * Suggest the next recipe to cook
  */
-export async function suggestNext(): Promise<string | null> {
+export async function suggestNext(excludeRecipeId?: string): Promise<string | null> {
   try {
     const { start: weekStart, end: weekEnd } = getCurrentWeekRange();
     const prefs = await db.preferences.findFirst();
@@ -204,9 +204,9 @@ export async function suggestNext(): Promise<string | null> {
       },
     });
 
-    // Filter out recently eaten recipes
+    // Filter out recently eaten recipes AND the excluded recipe
     const candidates: RecipeCandidate[] = recipes
-      .filter((r) => !recentIds.has(r.id))
+      .filter((r) => !recentIds.has(r.id) && r.id !== excludeRecipeId)
       .map((r) => ({
         id: r.id,
         title: r.title,
@@ -217,15 +217,17 @@ export async function suggestNext(): Promise<string | null> {
       }));
 
     if (candidates.length === 0) {
-      // If all recipes are in cooldown, suggest from all recipes
-      const allCandidates: RecipeCandidate[] = recipes.map((r) => ({
-        id: r.id,
-        title: r.title,
-        buckets: r.buckets.map((br) => br.bucket.name),
-        isFavorite: r.isFavorite,
-        timeMinutes: r.timeMinutes,
-        lastEaten: lastEaten.get(r.id),
-      }));
+      // If all recipes are in cooldown, suggest from all recipes (but still exclude the current one)
+      const allCandidates: RecipeCandidate[] = recipes
+        .filter((r) => r.id !== excludeRecipeId)
+        .map((r) => ({
+          id: r.id,
+          title: r.title,
+          buckets: r.buckets.map((br) => br.bucket.name),
+          isFavorite: r.isFavorite,
+          timeMinutes: r.timeMinutes,
+          lastEaten: lastEaten.get(r.id),
+        }));
 
       const isWeekday = [1, 2, 3, 4, 5].includes(new Date().getDay());
       const ranked = rankCandidates(allCandidates, deficits, isWeekday);

@@ -2,9 +2,12 @@ import { suggestNext } from "@/lib/suggestion";
 import { listRecipes } from "@/app/actions/recipes";
 import { NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const suggestionId = await suggestNext();
+    const { searchParams } = new URL(request.url);
+    const excludeId = searchParams.get('exclude');
+    
+    const suggestionId = await suggestNext(excludeId || undefined);
     if (!suggestionId) {
       return NextResponse.json({ recipe: null });
     }
