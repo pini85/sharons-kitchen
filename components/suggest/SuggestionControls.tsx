@@ -15,8 +15,8 @@ export function SuggestionControls({
   isLoading = false,
 }: SuggestionControlsProps) {
   return (
-    <div className="fixed bottom-20 left-0 right-0 z-[9999] bg-card border-t border-border safe-area-inset-bottom px-4 py-3 shadow-2xl">
-      <div className="flex gap-2 max-w-2xl mx-auto">
+    <div className="flex-shrink-0 bg-card border-t border-border px-4 py-3 mt-4">
+      <div className="flex gap-2">
         <button
           onClick={onDecline}
           disabled={isLoading}

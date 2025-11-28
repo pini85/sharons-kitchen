@@ -16,8 +16,8 @@ export default async function SuggestPage() {
   return (
     <>
       <Navbar />
-      <PageContainer className="container mx-auto px-4 py-6 max-w-2xl">
-        <h1 className="text-2xl font-bold mb-6">Meal Suggestion</h1>
+      <PageContainer className="container mx-auto px-4 max-w-2xl h-[calc(100vh-5rem)] flex flex-col overflow-hidden">
+        <h1 className="text-2xl font-bold mb-4 flex-shrink-0">Meal Suggestion</h1>
         <SuggestionFlow initialRecipe={recipe} />
       </PageContainer>
     </>

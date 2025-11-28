@@ -77,16 +77,18 @@ export function SuggestionFlow({ initialRecipe }: SuggestionFlowProps) {
   }
 
   return (
-    <div className="space-y-6 pb-32">
-      <SuggestCard
-        id={recipe.id}
-        title={recipe.title}
-        imageUrl={recipe.imageUrl}
-        timeMinutes={recipe.timeMinutes}
-        isFavorite={recipe.isFavorite}
-        buckets={recipe.buckets}
-        description={recipe.description}
-      />
+    <div className="flex flex-col flex-1 overflow-hidden">
+      <div className="flex-1 overflow-y-auto">
+        <SuggestCard
+          id={recipe.id}
+          title={recipe.title}
+          imageUrl={recipe.imageUrl}
+          timeMinutes={recipe.timeMinutes}
+          isFavorite={recipe.isFavorite}
+          buckets={recipe.buckets}
+          description={recipe.description}
+        />
+      </div>
       <SuggestionControls
         onAccept={handleAccept}
         onDecline={handleDecline}
