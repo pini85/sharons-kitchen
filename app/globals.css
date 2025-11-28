@@ -1,8 +1,23 @@
 @import "tailwindcss";
 
+/* Light Theme */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: 35 53% 90%;
+  --fg: 16 40% 25%;
+  --card: 38 28% 96%;
+  --border: 38 28% 77%;
+  --accent: 27 60% 58%;
+  --accent2: 16 40% 25%;
+}
+
+/* Dark Theme */
+.dark {
+  --bg: 20 15% 12%;
+  --fg: 35 45% 85%;
+  --card: 20 12% 16%;
+  --border: 20 10% 22%;
+  --accent: 30 70% 66%;
+  --accent2: 15 48% 48%;
 }
 
 @theme inline {
