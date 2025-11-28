@@ -1,0 +1,85 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+model Recipe {
+  id           String                 @id @default(cuid())
+  title        String
+  description  String?
+  imageUrl     String?
+  timeMinutes  Int?
+  cuisine      String?
+  isFavorite   Boolean                @default(false)
+  steps        Step[]
+  ingredients  IngredientOnRecipe[]
+  buckets      BucketOnRecipe[]
+  meals        Meal[]
+  createdAt    DateTime               @default(now())
+  updatedAt    DateTime               @updatedAt
+}
+
+model Step {
+  id        String   @id @default(cuid())
+  order     Int
+  text      String
+  recipeId  String
+  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+}
+
+model Ingredient {
+  id        String                @id @default(cuid())
+  name      String                @unique
+  recipes   IngredientOnRecipe[]
+}
+
+model IngredientOnRecipe {
+  recipeId     String
+  ingredientId String
+  amount       String?
+  recipe       Recipe      @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  ingredient   Ingredient  @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+  @@id([recipeId, ingredientId])
+}
+
+model Bucket {
+  id       String           @id @default(cuid())
+  name     String           @unique  // meat, fish, chicken, vegan
+  recipes  BucketOnRecipe[]
+}
+
+model BucketOnRecipe {
+  recipeId String
+  bucketId String
+  recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  bucket   Bucket @relation(fields: [bucketId], references: [id], onDelete: Cascade)
+  @@id([recipeId, bucketId])
+}
+
+model Meal {
+  id         String   @id @default(cuid())
+  recipeId   String
+  date       DateTime @default(now())
+  servedAt   String?
+  notes      String?
+  recipe     Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+}
+
+model Preferences {
+  id              String   @id @default(cuid())
+  meatPerWeek     Int      @default(1)
+  fishPerWeek     Int      @default(1)
+  chickenPerWeek  Int      @default(3)
+  veganPerWeek    Int      @default(2)
+  cooldownDays    Int      @default(5)
+  updatedAt       DateTime @updatedAt
+}
+

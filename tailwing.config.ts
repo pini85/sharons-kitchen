@@ -9,7 +9,21 @@ const config: Config = {
     "./ui/**/*.{ts,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        background: "hsl(var(--bg))",
+        foreground: "hsl(var(--fg))",
+        card: {
+          DEFAULT: "hsl(var(--card))",
+          foreground: "hsl(var(--fg))",
+        },
+        border: "hsl(var(--border))",
+        accent: {
+          DEFAULT: "hsl(var(--accent))",
+          foreground: "hsl(var(--accent2))",
+        },
+      },
+    },
   },
   plugins: [],
 };
