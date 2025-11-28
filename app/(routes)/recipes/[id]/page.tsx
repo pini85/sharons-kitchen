@@ -18,7 +18,7 @@ export default async function RecipeDetailPage({
 }) {
   const result = await listRecipes();
   const recipe = result.success && result.data
-    ? result.data.find((r) => r.id === params.id)
+    ? result.data.find((r) => r.id === params.id) ?? null
     : null;
 
   if (!recipe) {

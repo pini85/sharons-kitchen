@@ -10,11 +10,11 @@ export async function GET() {
     }
 
     const result = await listRecipes();
-    if (!result.success) {
+    if (!result.success || !result.data) {
       return NextResponse.json({ recipe: null });
     }
 
-    const recipe = result.data.find((r) => r.id === suggestionId);
+    const recipe = result.data.find((r) => r.id === suggestionId) ?? null;
     return NextResponse.json({ recipe });
   } catch (error) {
     console.error("Error getting suggestion:", error);

@@ -99,7 +99,7 @@ export async function updateRecipe(id: string, data: Partial<RecipeInputType>) {
         data: ingredients.map((ing, idx) => ({
           recipeId: id,
           ingredientId: ing.id,
-          amount: validated.ingredients![idx].amount,
+          amount: validated.ingredients?.[idx]?.amount,
         })),
       });
     }

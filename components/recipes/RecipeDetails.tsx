@@ -40,7 +40,7 @@ export function RecipeDetails({ recipe }: RecipeDetailsProps) {
 
   const handleToggleFavorite = async () => {
     const result = await toggleFavorite(recipe.id);
-    if (result.success) {
+    if (result.success && result.data) {
       toast.success(result.data.isFavorite ? "Added to favorites" : "Removed from favorites");
       router.refresh();
     } else {

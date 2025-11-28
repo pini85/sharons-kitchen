@@ -256,7 +256,7 @@ export async function acceptSuggestion(
   recipeId: string,
   servedAt?: string,
   notes?: string
-): Promise<{ success: boolean; nextSuggestionId: string | null }> {
+): Promise<{ success: true; nextSuggestionId: string | null } | { success: false; nextSuggestionId: null }> {
   try {
     // Log the meal
     await db.meal.create({

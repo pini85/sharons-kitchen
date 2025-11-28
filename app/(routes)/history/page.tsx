@@ -1,11 +1,11 @@
 import { listMeals } from "@/app/actions/meals";
 import { PageContainer } from "@/components/common/PageContainer";
 import { Navbar } from "@/components/common/Navbar";
-import { MealList } from "@/components/history/MealList";
+import { MealList, type Meal } from "@/components/history/MealList";
 
 export default async function HistoryPage() {
   const result = await listMeals();
-  const meals = result.success && result.data ? result.data : [];
+  const meals = (result.success && result.data ? result.data : []) as Array<Meal>;
 
   return (
     <>

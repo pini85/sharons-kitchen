@@ -8,7 +8,7 @@ export default function NewRecipePage() {
   async function handleSubmit(data: Parameters<typeof createRecipe>[0]) {
     "use server";
     const result = await createRecipe(data);
-    if (result.success) {
+    if (result.success && result.data) {
       redirect(`/recipes/${result.data.id}`);
     }
     return result;

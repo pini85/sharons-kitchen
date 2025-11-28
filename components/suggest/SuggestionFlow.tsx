@@ -53,15 +53,15 @@ export function SuggestionFlow({ initialRecipe }: SuggestionFlowProps) {
       router.refresh();
       if (result.nextSuggestionId) {
         const recipesResult = await listRecipes();
-        if (recipesResult.success) {
-          const nextRecipe = recipesResult.data.find((r) => r.id === result.nextSuggestionId);
-          setRecipe(nextRecipe || null);
+        if (recipesResult.success && recipesResult.data) {
+          const nextRecipe = recipesResult.data.find((r) => r.id === result.nextSuggestionId) ?? null;
+          setRecipe(nextRecipe);
         }
       } else {
         setRecipe(null);
       }
     } else {
-      toast.error(result.error || "Failed to log meal");
+      toast.error("error" in result ? result.error : "Failed to log meal");
     }
     setIsLoading(false);
   };

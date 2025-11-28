@@ -9,8 +9,8 @@ import { SuggestionFlow } from "@/components/suggest/SuggestionFlow";
 export default async function SuggestPage() {
   const suggestionId = await suggestNext();
   const result = await listRecipes();
-  const recipe = suggestionId && result.success
-    ? result.data.find((r) => r.id === suggestionId)
+  const recipe = suggestionId && result.success && result.data
+    ? result.data.find((r) => r.id === suggestionId) ?? null
     : null;
 
   return (

@@ -18,7 +18,7 @@ export default async function RecipesPage({
     favorite: searchParams.favorite === "true" ? true : undefined,
   });
 
-  const recipes = result.success ? result.data : [];
+  const recipes = result.success && result.data ? result.data : [];
 
   return (
     <>

@@ -9,20 +9,22 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { fadeInUp, staggerContainer } from "@/lib/motion";
 
-interface MealListProps {
-  meals: Array<{
+export type Meal = {
+  id: string;
+  date: Date;
+  servedAt?: string | null;
+  notes?: string | null;
+  recipe: {
     id: string;
-    date: Date;
-    servedAt?: string | null;
-    notes?: string | null;
-    recipe: {
-      id: string;
-      title: string;
-      imageUrl?: string | null;
-      timeMinutes?: number | null;
-      buckets: Array<{ bucket: { name: string } }>;
-    };
-  }>;
+    title: string;
+    imageUrl?: string | null;
+    timeMinutes?: number | null;
+    buckets: Array<{ bucket: { name: string } }>;
+  };
+};
+
+interface MealListProps {
+  meals: Array<Meal>;
 }
 
 export function MealList({ meals }: MealListProps) {

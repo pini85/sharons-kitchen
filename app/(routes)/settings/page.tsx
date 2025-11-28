@@ -5,7 +5,7 @@ import { Navbar } from "@/components/common/Navbar";
 
 export default async function SettingsPage() {
   const result = await getPreferences();
-  const preferences = result.success ? result.data : null;
+  const preferences = result.success && result.data ? result.data : null;
 
   return (
     <>

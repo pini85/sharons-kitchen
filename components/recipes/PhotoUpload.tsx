@@ -37,7 +37,10 @@ export function PhotoUpload({ value, onChange, className }: PhotoUploadProps) {
           uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "sharons-kitchen"}
           onUpload={(result) => {
             if (result.info && typeof result.info === "object" && "secure_url" in result.info) {
-              onChange(result.info.secure_url as string);
+              const secureUrl = result.info.secure_url;
+              if (typeof secureUrl === "string") {
+                onChange(secureUrl);
+              }
             }
             setIsUploading(false);
           }}
