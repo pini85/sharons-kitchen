@@ -5,7 +5,7 @@ import { MealList } from "@/components/history/MealList";
 
 export default async function HistoryPage() {
   const result = await listMeals();
-  const meals = result.success ? result.data : [];
+  const meals = result.success && result.data ? result.data : [];
 
   return (
     <>

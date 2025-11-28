@@ -17,7 +17,7 @@ export default async function RecipeDetailPage({
   searchParams: { edit?: string };
 }) {
   const result = await listRecipes();
-  const recipe = result.success
+  const recipe = result.success && result.data
     ? result.data.find((r) => r.id === params.id)
     : null;
 

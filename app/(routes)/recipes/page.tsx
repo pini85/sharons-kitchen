@@ -5,6 +5,7 @@ import { Navbar } from "@/components/common/Navbar";
 import Link from "next/link";
 import { Plus, Search } from "lucide-react";
 import { RecipeSearch } from "@/components/recipes/RecipeSearch";
+import { Suspense } from "react";
 
 export default async function RecipesPage({
   searchParams,
@@ -34,7 +35,9 @@ export default async function RecipesPage({
           </Link>
         </div>
 
-        <RecipeSearch />
+        <Suspense fallback={<div className="mb-6">Loading search...</div>}>
+          <RecipeSearch />
+        </Suspense>
 
         {recipes.length === 0 ? (
           <div className="text-center py-12">
