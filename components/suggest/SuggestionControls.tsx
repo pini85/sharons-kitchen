@@ -1,56 +1,43 @@
 "use client";
 
-import { Check, X, RefreshCw } from "lucide-react";
+import { Check, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface SuggestionControlsProps {
   onAccept: () => void;
   onDecline: () => void;
-  onAnother: () => void;
   isLoading?: boolean;
 }
 
 export function SuggestionControls({
   onAccept,
   onDecline,
-  onAnother,
   isLoading = false,
 }: SuggestionControlsProps) {
   return (
-    <div className="fixed bottom-20 left-0 right-0 z-[9999] bg-background border-t border-border safe-area-inset-bottom px-4 py-4 shadow-2xl">
-      <div className="flex gap-3 max-w-2xl mx-auto">
-        <button
-          onClick={onAccept}
-          disabled={isLoading}
-          className={cn(
-            "flex-1 py-4 bg-accent text-accent-foreground rounded-lg font-medium text-lg flex items-center justify-center gap-2 min-h-[52px] transition-colors",
-            isLoading && "opacity-50 cursor-not-allowed"
-          )}
-        >
-          <Check className="h-5 w-5" />
-          Accept
-        </button>
+    <div className="fixed bottom-20 left-0 right-0 z-[9999] bg-card border-t border-border safe-area-inset-bottom px-4 py-3 shadow-2xl">
+      <div className="flex gap-2 max-w-2xl mx-auto">
         <button
           onClick={onDecline}
           disabled={isLoading}
           className={cn(
-            "flex-1 py-4 bg-card border-2 border-border rounded-lg font-medium text-lg flex items-center justify-center gap-2 min-h-[52px] hover:border-accent transition-colors",
+            "flex-1 py-2.5 bg-background border-2 border-border rounded-lg font-medium text-base flex items-center justify-center gap-2 hover:border-accent transition-colors",
             isLoading && "opacity-50 cursor-not-allowed"
           )}
         >
-          <X className="h-5 w-5" />
-          Decline
+          <X className="h-4 w-4" />
+          Skip
         </button>
         <button
-          onClick={onAnother}
+          onClick={onAccept}
           disabled={isLoading}
           className={cn(
-            "px-4 py-4 bg-card border border-border rounded-lg font-medium flex items-center justify-center min-h-[52px] hover:border-accent transition-colors",
+            "flex-1 py-2.5 bg-accent text-accent-foreground rounded-lg font-medium text-base flex items-center justify-center gap-2 transition-colors",
             isLoading && "opacity-50 cursor-not-allowed"
           )}
-          aria-label="Another suggestion"
         >
-          <RefreshCw className="h-5 w-5" />
+          <Check className="h-4 w-4" />
+          Accept
         </button>
       </div>
     </div>

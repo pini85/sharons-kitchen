@@ -258,14 +258,21 @@ export async function acceptSuggestion(
   notes?: string
 ): Promise<{ success: true; nextSuggestionId: string | null } | { success: false; nextSuggestionId: null }> {
   try {
-    // Log the meal
+    const { revalidatePath } = await import("next/cache");
+    
+    // Log the meal with current date
     await db.meal.create({
       data: {
         recipeId,
+        date: new Date(), // Explicitly set the date when accepting
         servedAt,
         notes,
       },
     });
+
+    // Revalidate the history page so it shows the new meal
+    revalidatePath("/history");
+    revalidatePath("/suggest");
 
     // Get next suggestion
     const nextId = await suggestNext();

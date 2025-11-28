@@ -50,30 +50,18 @@ export function SuggestionFlow({ initialRecipe }: SuggestionFlowProps) {
     const result = await acceptSuggestion(recipe.id);
     if (result.success) {
       toast.success("Meal logged!");
-      router.refresh();
-      if (result.nextSuggestionId) {
-        const recipesResult = await listRecipes();
-        if (recipesResult.success && recipesResult.data) {
-          const nextRecipe = recipesResult.data.find((r) => r.id === result.nextSuggestionId) ?? null;
-          setRecipe(nextRecipe);
-        }
-      } else {
-        setRecipe(null);
-      }
+      // Redirect to history page to see the logged meal
+      router.push("/history");
     } else {
       toast.error("error" in result ? result.error : "Failed to log meal");
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   const handleDecline = async () => {
     if (!recipe) return;
     setIsLoading(true);
     await declineSuggestion(recipe.id);
-    await loadNextSuggestion();
-  };
-
-  const handleAnother = async () => {
     await loadNextSuggestion();
   };
 
@@ -102,7 +90,6 @@ export function SuggestionFlow({ initialRecipe }: SuggestionFlowProps) {
       <SuggestionControls
         onAccept={handleAccept}
         onDecline={handleDecline}
-        onAnother={handleAnother}
         isLoading={isLoading}
       />
     </div>
